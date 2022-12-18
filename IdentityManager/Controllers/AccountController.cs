@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityManager.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityManager.Controllers
@@ -27,7 +28,7 @@ namespace IdentityManager.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Register(string returnurl = null)
 		{
-            ViewData["ReturnUrl"] = returnurl;
+			ViewData["ReturnUrl"] = returnurl;
 			RegisterViewModel registerViewModel = new RegisterViewModel();
 			return View(registerViewModel);
 		}
@@ -36,8 +37,8 @@ namespace IdentityManager.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Register(RegisterViewModel model, string returnurl = null)
 		{
-            ViewData["ReturnUrl"] = returnurl;
-            returnurl = returnurl ?? Url.Content("~/");
+			ViewData["ReturnUrl"] = returnurl;
+			returnurl = returnurl ?? Url.Content("~/");
 			if (ModelState.IsValid)
 			{
 				var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name };
@@ -58,7 +59,7 @@ namespace IdentityManager.Controllers
 		[HttpGet]
 		public ActionResult Login(string returnurl = null)
 		{
-            ViewData["ReturnUrl"] = returnurl;
+			ViewData["ReturnUrl"] = returnurl;
 			return View();
 		}
 
@@ -66,8 +67,8 @@ namespace IdentityManager.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Login(LoginViewModel model, string returnurl = null)
 		{
-            ViewData["ReturnUrl"] = returnurl;
-            returnurl = returnurl ?? Url.Content("~/");
+			ViewData["ReturnUrl"] = returnurl;
+			returnurl = returnurl ?? Url.Content("~/");
 			if (ModelState.IsValid)
 			{
 				var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
@@ -96,6 +97,19 @@ namespace IdentityManager.Controllers
 		{
 			await _signInManager.SignOutAsync();
 			return RedirectToAction(nameof(HomeController.Index), "Home");
+		}
+
+		[HttpGet]
+		public ActionResult ForgotPassword()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+		{
+			return View(model);
 		}
 
 		private void AddErrors(IdentityResult result)
