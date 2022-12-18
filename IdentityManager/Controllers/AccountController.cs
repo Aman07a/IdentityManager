@@ -52,12 +52,20 @@ namespace IdentityManager.Controllers
 			return View(model);
 		}
 
-		private void AddErrors(IdentityResult result)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogOff()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        private void AddErrors(IdentityResult result)
 		{
 			foreach (var error in result.Errors)
 			{
 				ModelState.AddModelError(string.Empty, error.Description);
 			}
 		}
-	}
+    }
 }
