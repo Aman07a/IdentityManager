@@ -22,10 +22,7 @@ namespace IdentityManager.Service
 		{
 			_mailJetOptions = _configuration.GetSection("MailJet").Get<MailJetOptions>();
 
-			MailjetClient client = new MailjetClient(
-				_mailJetOptions.ApiKey,
-				_mailJetOptions.SecretKey
-			)
+			MailjetClient client = new MailjetClient(_mailJetOptions.ApiKey, _mailJetOptions.SecretKey)
 			{
 				Version = ApiVersion.V3_1,
 			};
@@ -50,7 +47,7 @@ namespace IdentityManager.Service
 							{
 								new JObject
 								{
-									{ "Email", "aman07_a@protonmail.com" },
+									{ "Email", email },
 									{ "Name", "Aman" }
 								}
 							}
@@ -67,13 +64,7 @@ namespace IdentityManager.Service
 
 			// if (response.IsSuccessStatusCode)
 			// {
-			// 	Console.WriteLine(
-			// 		string.Format(
-			// 			"Total: {0}, Count: {1}\n",
-			// 			response.GetTotal(),
-			// 			response.GetCount()
-			// 		)
-			// 	);
+			// 	Console.WriteLine(string.Format("Total: {0}, Count: {1}\n", response.GetTotal(), response.GetCount()));
 			// 	Console.WriteLine(response.GetData());
 			// }
 			// else
