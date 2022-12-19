@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityManager.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityManager.Controllers
@@ -13,11 +13,13 @@ namespace IdentityManager.Controllers
 	{
 		private readonly UserManager<IdentityUser> _userManager;
 		private readonly SignInManager<IdentityUser> _signInManager;
+		private readonly IEmailSender _emailSender;
 
-		public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+		public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IEmailSender emailSender)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
+			_emailSender = emailSender;
 		}
 
 		public IActionResult Index()
@@ -107,9 +109,33 @@ namespace IdentityManager.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+		public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
 		{
+			if (ModelState.IsValid)
+			{
+				var user = await _userManager.FindByEmailAsync(model.Email);
+
+				if (user == null)
+				{
+					return RedirectToAction("ForgotPasswordConfirmation");
+				}
+
+				var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+				var callbackurl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+
+				await _emailSender.SendEmailAsync(model.Email, "Reset Password - Identity Manager",
+					"Please reset your password by clicking here: <a href=\"" + callbackurl + "\">link</a>");
+
+				return RedirectToAction("ForgotPasswordConfirmation");
+			}
+
 			return View(model);
+		}
+
+		[HttpGet]
+		public IActionResult ForgotPasswordConfirmation()
+		{
+			return View();
 		}
 
 		private void AddErrors(IdentityResult result)
