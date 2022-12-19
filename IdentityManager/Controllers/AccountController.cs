@@ -18,8 +18,8 @@ namespace IdentityManager.Controllers
 		public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IEmailSender emailSender)
 		{
 			_userManager = userManager;
-			_signInManager = signInManager;
 			_emailSender = emailSender;
+			_signInManager = signInManager;
 		}
 
 		public IActionResult Index()
@@ -59,7 +59,7 @@ namespace IdentityManager.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult Login(string returnurl = null)
+		public IActionResult Login(string returnurl = null)
 		{
 			ViewData["ReturnUrl"] = returnurl;
 			return View();
@@ -102,7 +102,7 @@ namespace IdentityManager.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult ForgotPassword()
+		public IActionResult ForgotPassword()
 		{
 			return View();
 		}
